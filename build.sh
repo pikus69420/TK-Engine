@@ -37,7 +37,7 @@ detect_distro() {
 install_deps_linux() {
     echo -e "${YELLOW}Instalowanie zależności systemowych...${NC}"
     if command -v dnf &> /dev/null; then
-        sudo dnf install -y gcc gcc-c++ cmake make pkg-config libsrtp2-devel
+        sudo dnf install -y --skip-unavailable gcc gcc-c++ cmake make pkg-config libsrtp2-devel libpng-devel opus-devel openssl-devel
     elif command -v apt-get &> /dev/null; then
         sudo apt-get update
         sudo apt-get install -y build-essential cmake pkg-config libsrtp2-dev
@@ -66,7 +66,7 @@ install_deps_mac() {
 install_mingw_linux() {
     echo -e "${YELLOW}Instalowanie toolchaina MinGW...${NC}"
     if command -v dnf &> /dev/null; then
-        sudo dnf install -y mingw64-gcc mingw64-gcc-c++ mingw64-cmake mingw64-pkg-config mingw64-winpthreads-static
+        sudo dnf install -y --skip-unavailable mingw64-gcc mingw64-gcc-c++ mingw64-cmake mingw64-pkg-config mingw64-winpthreads-static
     elif command -v apt-get &> /dev/null; then
         sudo apt-get install -y gcc-mingw-w64 g++-mingw-w64 cmake mingw-w64-tools
     else
@@ -138,9 +138,15 @@ build_deps_from_source() {
         -DCMAKE_C_FLAGS="-Wno-error=format"
         make -j$(nproc) srtp2
     # Zainstaluj tylko bibliotekę (bez testów)
-    sudo install -m 755 libsrtp2.dll "${INSTALL_PREFIX}/bin/"
-    sudo install -m 644 libsrtp2.dll.a "${INSTALL_PREFIX}/lib/"
-    sudo install -m 644 libsrtp2.a "${INSTALL_PREFIX}/lib/" 2>/dev/null || true
+    if [[ "${TARGET}" == "windows" ]]; then
+        sudo install -m 755 libsrtp2.dll "${INSTALL_PREFIX}/bin/"
+        sudo install -m 644 libsrtp2.dll.a "${INSTALL_PREFIX}/lib/"
+    else
+        sudo install -m 644 libsrtp2.a "${INSTALL_PREFIX}/lib/"
+        if [[ -f libsrtp2.so ]]; then
+            sudo install -m 755 libsrtp2.so "${INSTALL_PREFIX}/lib/"
+        fi
+    fi
     sudo cp -r ../include/* "${INSTALL_PREFIX}/include/"
 
     # Stwórz plik .pc jeśli nie istnieje
@@ -230,7 +236,11 @@ build_tkengine() {
     rm -rf "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}" && cd "${BUILD_DIR}"
 
+if [[ "${TARGET}" == "windows" ]]; then
     ${CMAKE_CMD} .. ${CMAKE_EXTRA} -DCMAKE_SHARED_LINKER_FLAGS="-lopus -lpng16 -lssl -lcrypto -lstrmiids -luuid -lwinmm -lws2_32 -liphlpapi -ladvapi32"
+else
+    ${CMAKE_CMD} .. ${CMAKE_EXTRA}
+fi
     make -j$(nproc)
 
     echo ""
