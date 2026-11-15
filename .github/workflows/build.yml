@@ -61,7 +61,7 @@ jobs:
         git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
         C:\vcpkg\bootstrap-vcpkg.bat
     
-    - name: Instalacja zależności przez vcpkg
+    - name: Instalacja libsrtp przez vcpkg
       run: |
         C:\vcpkg\vcpkg install libsrtp:x64-windows
     
@@ -70,22 +70,24 @@ jobs:
         git clone --depth 1 https://github.com/baresip/re.git C:\re
         cd C:\re
         mkdir build && cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_INSTALL_PREFIX=C:\re-install
         cmake --build . --config Release
+        cmake --install .
     
     - name: Budowa baresip ze źródeł
       run: |
         git clone --depth 1 https://github.com/baresip/baresip.git C:\baresip
         cd C:\baresip
         mkdir build && cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_PREFIX_PATH=C:\re-install -DCMAKE_INSTALL_PREFIX=C:\baresip-install
         cmake --build . --config Release
+        cmake --install .
     
     - name: Budowa TK Engine
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake -DCMAKE_PREFIX_PATH="C:\re-install;C:\baresip-install"
         cmake --build . --config Release
     
     - name: Przesłanie artefaktu
