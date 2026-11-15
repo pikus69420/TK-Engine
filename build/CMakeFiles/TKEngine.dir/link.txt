@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -Wl,--dependency-file=CMakeFiles/TKEngine.dir/link.d -Wl,-soname,libTKEngine.so -o libTKEngine.so CMakeFiles/TKEngine.dir/src/TKEngine.cpp.o CMakeFiles/TKEngine.dir/src/SIPManager.cpp.o CMakeFiles/TKEngine.dir/src/Recorder.cpp.o CMakeFiles/TKEngine.dir/src/Config.cpp.o  /usr/lib64/libbaresip.so /usr/lib64/libre.so -lsrtp2 -lpthread

@@ -1,0 +1,18 @@
+TK Engine - Silnik SIP do tworzenia własnych softphone Telekomunikcji Kaliskiej
+Copyright 2026 Telekomunikacja Kaliska
+
+Ten produkt zawiera oprogramowanie rozwijane przez następujące projekty open source:
+
+1. baresip i libre (Generic library for real-time communications)
+   - Autorzy: Alfred E. Heggestad i współtwórcy
+   - Licencja: BSD 3-Clause "New" or "Revised" License
+   - Źródło: https://github.com/baresip/baresip
+   - Źródło: https://github.com/baresip/re
+
+2. libsrtp2 (Secure Real-time Transport Protocol)
+   Autor: Cisco Systems, Inc.
+   - Licencja: BSD-style license
+   - Źródło: https://github.com/cisco/libsrtp
+
+Zgodnie z wymogami licencji Apache 2.0, powyższe informacje o prawach autorskich 
+i licencjach muszą zostać zachowane w każdej dystrybucji tego oprogramowania.

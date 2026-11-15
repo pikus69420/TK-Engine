@@ -1,0 +1,45 @@
+name: Budowa TKEngine
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install deps
+      run: sudo apt-get install -y libre-dev baresip-dev libsrtp2-dev
+    - name: Build
+      run: |
+        mkdir build && cd build
+        cmake ..
+        make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: tkengine-linux
+        path: build/libTKEngine.so
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install vcpkg
+      uses: lukka/get-vcpkg@v1
+    - name: Install deps
+      run: vcpkg install baresip:x64-windows libsrtp:x64-windows
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+        cmake --build . --config Release
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: tkengine-windows
+        path: build/Release/TKEngine.dll
