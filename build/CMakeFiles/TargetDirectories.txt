@@ -1,7 +1,0 @@
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/TKEngine.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/edit_cache.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/rebuild_cache.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/list_install_components.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/install.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/install/local.dir
-/home/pikkunalka/Dokumenty/tk app/tk engine/build/CMakeFiles/install/strip.dir
