@@ -1,1 +1,0 @@
- "/usr/x86_64-w64-mingw32/sys-root/mingw/lib/libbaresip.a" "/usr/x86_64-w64-mingw32/sys-root/mingw/lib/libre.dll.a" -lsrtp2 -lopus -lpng16 -lssl -lcrypto -lstrmiids -luuid -lwinmm -lws2_32 -liphlpapi -ladvapi32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

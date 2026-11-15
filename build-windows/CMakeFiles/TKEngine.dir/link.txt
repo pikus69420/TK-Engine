@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/TKEngine.dir/objects.a
-/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/TKEngine.dir/objects.a @CMakeFiles/TKEngine.dir/objects1.rsp
-/usr/bin/x86_64-w64-mingw32-g++ -shared -lopus -lpng16 -lssl -lcrypto -lstrmiids -luuid -lwinmm -lws2_32 -liphlpapi -ladvapi32 -o libTKEngine.dll -Wl,--out-implib,libTKEngine.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/TKEngine.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/TKEngine.dir/linkLibs.rsp
