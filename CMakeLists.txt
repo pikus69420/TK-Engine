@@ -7,29 +7,46 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(PkgConfig REQUIRED)
 
-# 1. Znajdź libsrtp2 przez pkg-config (to działa w Fedorze)
+# Znajdź libsrtp2 przez pkg-config
 pkg_check_modules(SRTP REQUIRED libsrtp2)
 
-# 2. Ręcznie znajdź nagłówki (omijamy brakujące pliki .pc w Fedorze)
-find_path(RE_INCLUDE_DIR NAMES re/re.h PATHS /usr/include /usr/local/include)
-find_path(BARESIP_INCLUDE_DIR NAMES baresip.h PATHS /usr/include /usr/local/include)
+# Ścieżki dla Windows (mingw sysroot) i Linux
+if(WIN32)
+    if(DEFINED ENV{TKENGINE_SYSROOT})
+        set(SYSROOT "$ENV{TKENGINE_SYSROOT}")
+    else()
+        set(SYSROOT "/usr/x86_64-w64-mingw32/sys-root/mingw")
+    endif()
+    set(LIB_EXT ".a")
+else()
+    set(SYSROOT "")
+    set(LIB_EXT ".so")
+endif()
+
+# Znajdź nagłówki
+find_path(RE_INCLUDE_DIR NAMES re/re.h
+    PATHS ${SYSROOT}/include /usr/include /usr/local/include)
+find_path(BARESIP_INCLUDE_DIR NAMES baresip.h
+    PATHS ${SYSROOT}/include /usr/include /usr/local/include)
 
 if(NOT RE_INCLUDE_DIR)
-    message(FATAL_ERROR "Nie znaleziono re/re.h. Zainstaluj: sudo dnf install libre-devel")
+    message(FATAL_ERROR "Nie znaleziono re/re.h")
 endif()
 if(NOT BARESIP_INCLUDE_DIR)
-    message(FATAL_ERROR "Nie znaleziono baresip.h. Zainstaluj: sudo dnf install baresip-devel")
+    message(FATAL_ERROR "Nie znaleziono baresip.h")
 endif()
 
-# 3. Ręcznie znajdź biblioteki
-find_library(RE_LIBRARY NAMES re PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib)
-find_library(BARESIP_LIBRARY NAMES baresip PATHS /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib)
+# Znajdź biblioteki
+find_library(RE_LIBRARY NAMES re
+    PATHS ${SYSROOT}/lib /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib)
+find_library(BARESIP_LIBRARY NAMES baresip
+    PATHS ${SYSROOT}/lib /usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib)
 
 if(NOT RE_LIBRARY)
-    message(FATAL_ERROR "Nie znaleziono biblioteki libre.so")
+    message(FATAL_ERROR "Nie znaleziono biblioteki libre")
 endif()
 if(NOT BARESIP_LIBRARY)
-    message(FATAL_ERROR "Nie znaleziono biblioteki libbaresip.so")
+    message(FATAL_ERROR "Nie znaleziono biblioteki libbaresip")
 endif()
 
 add_library(TKEngine SHARED
@@ -50,16 +67,30 @@ target_include_directories(TKEngine
         ${SRTP_INCLUDE_DIRS}
 )
 
-target_link_libraries(TKEngine PRIVATE
+# Biblioteki wspólne
+set(COMMON_LIBS
     ${BARESIP_LIBRARY}
     ${RE_LIBRARY}
     ${SRTP_LIBRARIES}
-    pthread
 )
 
+# Zależności baresip (opus, png, openssl)
 if(WIN32)
-    target_link_libraries(TKEngine PRIVATE ws2_32)
+    set(DEPS_LIBS
+        opus png16 ssl crypto
+        strmiids uuid winmm ws2_32 iphlpapi advapi32
+    )
+else()
+    set(DEPS_LIBS
+        opus png ssl crypto
+        pthread
+    )
 endif()
+
+target_link_libraries(TKEngine PRIVATE
+    ${COMMON_LIBS}
+    ${DEPS_LIBS}
+)
 
 target_compile_definitions(TKEngine PRIVATE TKENGINE_EXPORTS)
 
