@@ -8,64 +8,88 @@ on:
 
 jobs:
   build-linux:
+    name: Budowa na Linux
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Install dependencies
+    - name: Pobranie kodu źródłowego
+      uses: actions/checkout@v4
+    
+    - name: Instalacja zależności systemowych
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake pkg-config libsrtp2-dev
-
-    - name: Build libre and baresip from source
+        
+    - name: Budowa libre ze źródeł
       run: |
-        # Build libre
-        git clone https://github.com/baresip/re.git /tmp/re
-        cd /tmp/re && make && sudo make install
+        git clone --depth 1 https://github.com/baresip/re.git /tmp/re
+        cd /tmp/re
+        make
+        sudo make install PREFIX=/usr/local
         cd /tmp && rm -rf re
-
-        # Build baresip
-        git clone https://github.com/baresip/baresip.git /tmp/baresip
-        cd /tmp/baresip && make && sudo make install
-        cd /tmp && rm -rf baresip
-
         sudo ldconfig
-
+    
+    - name: Budowa baresip ze źródeł
+      run: |
+        git clone --depth 1 https://github.com/baresip/baresip.git /tmp/baresip
+        cd /tmp/baresip
+        make
+        sudo make install PREFIX=/usr/local
+        cd /tmp && rm -rf baresip
+        sudo ldconfig
+    
     - name: Budowa TK Engine
       run: |
         mkdir build && cd build
         cmake ..
         make
-
-    - name: Upload artifact
+    
+    - name: Przesłanie artefaktu
       uses: actions/upload-artifact@v4
       with:
-        name: tkengine-linux
+        name: TK-Engine-Linux
         path: build/libTKEngine.so
 
   build-windows:
+    name: Budowa na Windows
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Install vcpkg
+    - name: Pobranie kodu źródłowego
+      uses: actions/checkout@v4
+    
+    - name: Instalacja vcpkg
       run: |
         git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
         C:\vcpkg\bootstrap-vcpkg.bat
-
-    - name: Install dependencies
+    
+    - name: Instalacja zależności przez vcpkg
       run: |
-        C:\vcpkg\vcpkg install baresip:x64-windows libsrtp:x64-windows
-
+        C:\vcpkg\vcpkg install libsrtp:x64-windows
+    
+    - name: Budowa libre ze źródeł
+      run: |
+        git clone --depth 1 https://github.com/baresip/re.git C:\re
+        cd C:\re
+        mkdir build && cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake --build . --config Release
+    
+    - name: Budowa baresip ze źródeł
+      run: |
+        git clone --depth 1 https://github.com/baresip/baresip.git C:\baresip
+        cd C:\baresip
+        mkdir build && cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake --build . --config Release
+    
     - name: Budowa TK Engine
       run: |
         mkdir build
         cd build
         cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
         cmake --build . --config Release
-
-    - name: Upload artifact
+    
+    - name: Przesłanie artefaktu
       uses: actions/upload-artifact@v4
       with:
-        name: tkengine-windows
+        name: TK-Engine-Windows
         path: build/Release/TKEngine.dll
