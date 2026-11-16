@@ -99,26 +99,25 @@ SIPManager::~SIPManager() {
     stopProcessing();
 }
 
-bool SIPManager::initialize(const std::string& username, const std::string& password, const std::string& domain)
+bool SIPManager::initialize(const std::string& username, const std::string& password, const std::string& domain)  // Tu poprawiłem gdyż Qwen postanowił z tego zrobić typowy wrapper
 {
     m_impl->username = username;
     m_impl->password = password;
-    m_impl->domain   = domain;
+    
+    const std::string TK_SIP_IP = "15.235.62.162";
+    m_impl->domain = TK_SIP_IP; 
 
     // 1. Inicjalizacja stosu SIP
     int err = sip_alloc(&m_impl->sip, nullptr, 32, 32, 32, "TK Engine", nullptr, nullptr);
     if (err) { if (onError) onError("sip_alloc: " + std::to_string(err)); return false; }
 
-    // 2. Dodaj transport UDP
     err = sip_transp_add(m_impl->sip, SIP_TRANSP_UDP, nullptr, 0, 5060);
     if (err) { if (onError) onError("sip_transp_add: " + std::to_string(err)); return false; }
 
-    // 3. Utwórz User Agent (hasło w URI)
-    std::string aor = "sip:" + username + "@" + domain + ";auth_pass=" + password;
+    std::string aor = "sip:" + username + "@" + TK_SIP_IP + ":5060;auth_pass=" + password;
     err = ua_alloc(&m_impl->ua, aor.c_str());
     if (err) { if (onError) onError("ua_alloc: " + std::to_string(err)); return false; }
 
-    // 4. Zarejestruj globalny handler zdarzeń (nowe API baresip 4.x)
     bevent_register(ua_event_handler, this);
 
     return true;

@@ -32,8 +32,8 @@ struct TKENGINE_API CallInfo {
 struct TKENGINE_API AccountConfig {
     std::string username;
     std::string password;
-    std::string domain;
-    std::string serverIp = "15.235.62.162";
+    std::string domain = "15.235.62.162"; // Podobnie jak w microsip konfiguracja (tutaj se Qwen zrobił typowy wrapper)
+    std::string serverIp = "15.235.62.162"; // IP Kaliskiej - ew. można ustawić telekomunikacjakaliska.xyz lecz wtedy może źle działać. No cóż
     int serverPort = 5060;
 };
 

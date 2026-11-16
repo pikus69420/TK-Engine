@@ -249,7 +249,7 @@ fi
     echo -e "${GREEN}==========================================${NC}"
     
     if [[ "${TARGET}" == "windows" ]]; then
-        echo -e "Plik: ${CYAN}$(pwd)/libTKEngine.dll${NC}"
+        echo -e "Plik: ${CYAN}$(pwd)/TK-Engine.dll${NC}"
     elif [[ "${TARGET}" == "mac" ]]; then
         echo -e "Plik: ${CYAN}$(pwd)/libTKEngine.dylib${NC}"
     else

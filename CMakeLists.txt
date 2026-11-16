@@ -56,6 +56,13 @@ add_library(TKEngine SHARED
     src/Config.cpp
 )
 
+if(WIN32)
+    set_target_properties(TKEngine PROPERTIES
+        PREFIX ""
+        OUTPUT_NAME "TK-Engine"
+    )
+endif()
+
 target_include_directories(TKEngine
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
