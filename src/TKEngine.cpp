@@ -95,4 +95,53 @@ void TKEngine::stopProcessing() {
     m_impl->sip->stopProcessing();
 }
 
+
 } // namespace tk
+
+extern "C" {
+    #ifdef _WIN32
+        #define TK_API __declspec(dllexport)
+    #else
+        #define TK_API __attribute__((visibility("default")))
+    #endif
+
+    // Tworzenie i niszczenie obiektu
+    TK_API void* CreateTKEngine() { 
+        return new tk::TKEngine(); 
+    }
+    
+    TK_API void DestroyTKEngine(void* engine) { 
+        delete static_cast<tk::TKEngine*>(engine); 
+    }
+
+    // Wrapper na initialize (przyjmuje login i hasło, domena jest ignorowana)
+    TK_API bool TKEngine_Initialize(void* engine, const char* user, const char* pass) {
+        if (!engine) return false;
+        tk::AccountConfig config;
+        config.username = user;
+        config.password = pass;
+        // domain, serverIp i serverPort są już domyślnie ustawione w strukturze
+        return static_cast<tk::TKEngine*>(engine)->initialize(config); 
+    }
+
+    TK_API bool TKEngine_Register(void* engine) {
+        if (!engine) return false;
+        return static_cast<tk::TKEngine*>(engine)->registerAccount();
+    }
+
+    TK_API void TKEngine_MakeCall(void* engine, const char* dest) {
+        if (engine) static_cast<tk::TKEngine*>(engine)->makeCall(dest);
+    }
+
+    TK_API void TKEngine_Hangup(void* engine) {
+        if (engine) static_cast<tk::TKEngine*>(engine)->hangupCall("");
+    }
+
+    TK_API void TKEngine_StartProcessing(void* engine) {
+        if (engine) static_cast<tk::TKEngine*>(engine)->startProcessing();
+    }
+
+    TK_API void TKEngine_StopProcessing(void* engine) {
+        if (engine) static_cast<tk::TKEngine*>(engine)->stopProcessing();
+    }
+}
