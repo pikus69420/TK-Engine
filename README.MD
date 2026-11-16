@@ -1,4 +1,4 @@
-<img src="/home/pikkunalka/Dokumenty/tk_logo%20%281%29.png" title="" alt="tk_logo (1).png" width="153" />
+<img title="" src="https://files.catbox.moe/gcg9pm.png" alt="tk_logo (1).png" width="153" />
 
 # TK Engine
 
